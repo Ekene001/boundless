@@ -45,6 +45,11 @@ const LoginWrapper = ({ setLoadingState }: LoginWrapperProps) => {
     setLastMethod(method);
   }, []);
 
+  useEffect(() => {
+    const method = authClient.getLastUsedLoginMethod();
+    setLastMethod(method);
+  }, []);
+
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -177,11 +182,7 @@ const LoginWrapper = ({ setLoadingState }: LoginWrapperProps) => {
               setLoadingState(true);
             },
             onSuccess: async () => {
-              setIsLoading(false);
-              setLoadingState(false);
-
-              // Wait a bit for cookies to be set by Better Auth
-              await new Promise(resolve => setTimeout(resolve, 100));
+              await new Promise(resolve => setTimeout(resolve, 200));
 
               const session = await authClient.getSession();
 
@@ -210,8 +211,8 @@ const LoginWrapper = ({ setLoadingState }: LoginWrapperProps) => {
                 }
               }
 
-              // Use full page reload to ensure cookies are available in middleware
-              // Use callbackUrl if provided, otherwise redirect to home
+              // Keep loading state active during redirect
+              // The page will unmount when redirecting, so no need to set false
               window.location.href = callbackUrl;
             },
             onError: ctx => {

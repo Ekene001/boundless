@@ -2,14 +2,16 @@
 
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { formatDate } from '@/lib/utils';
-import { useEffect, useState } from 'react';
-import { sanitizeHtml } from '@/lib/utils/renderHtml';
+import { useEffect, useState, useRef } from 'react';
+import { FileText, Users, ArrowRight } from 'lucide-react';
+// import { sanitizeHtml } from '@/lib/utils/renderHtml';
 
 interface HackathonBannerProps {
   title: string;
-  subtitle?: string | React.ReactNode;
   imageUrl?: string;
+  tagline?: string;
   deadline?: string;
   startDate?: string;
   endDate?: string;
@@ -17,6 +19,15 @@ interface HackathonBannerProps {
   status?: string;
   participants?: number;
   totalPrizePool?: string;
+  // Action buttons
+  isRegistered?: boolean;
+  hasSubmitted?: boolean;
+  isEnded?: boolean;
+  isTeamFormationEnabled?: boolean;
+  onJoinClick?: () => void;
+  onSubmitClick?: () => void;
+  onViewSubmissionClick?: () => void;
+  onFindTeamClick?: () => void;
 }
 
 interface TimeRemaining {
@@ -59,9 +70,50 @@ function formatCountdown(time: TimeRemaining): string {
   }
 }
 
+const CategoriesDisplay = ({
+  categoriesList,
+}: {
+  categoriesList: string[];
+}) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [showEllipsis, setShowEllipsis] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const check = () => setShowEllipsis(el.scrollWidth > el.clientWidth);
+
+    check();
+
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, [categoriesList]);
+
+  return (
+    <div className={`relative flex items-center overflow-hidden`}>
+      <div ref={ref} className='scrollbar-hide flex gap-1.5 overflow-x-auto'>
+        {categoriesList.map((cat, i) => (
+          <span
+            key={i}
+            className='rounded-md bg-neutral-800/70 px-2 py-0.5 text-[11px] font-medium whitespace-nowrap text-gray-300'
+          >
+            {cat}
+          </span>
+        ))}
+      </div>
+      {showEllipsis && (
+        <div className='pointer-events-none absolute top-0 right-0 bottom-0 flex w-6 items-center justify-end bg-gradient-to-l from-[#030303] via-[#030303]/80 to-transparent pr-1'>
+          <span className='text-xs font-medium text-gray-500'>...</span>
+        </div>
+      )}
+    </div>
+  );
+};
+
 export function HackathonBanner({
   title,
-  subtitle,
+  tagline,
   imageUrl,
   deadline,
   startDate,
@@ -70,6 +122,14 @@ export function HackathonBanner({
   status,
   participants,
   totalPrizePool,
+  isRegistered = false,
+  hasSubmitted = false,
+  isEnded = false,
+  isTeamFormationEnabled = false,
+  onJoinClick,
+  onSubmitClick,
+  onViewSubmissionClick,
+  onFindTeamClick,
 }: HackathonBannerProps) {
   const [timeRemaining, setTimeRemaining] = useState<TimeRemaining>({
     days: 0,
@@ -203,9 +263,9 @@ export function HackathonBanner({
   };
 
   return (
-    <Card className='relative w-full overflow-hidden rounded-none border-0 p-0 shadow-none'>
+    <Card className='relative w-full overflow-hidden rounded-none border-0 bg-transparent p-0 shadow-none'>
       <div
-        className='relative h-64 md:h-80 lg:h-96'
+        className='relative h-64 rounded-4xl md:h-80 lg:h-96'
         style={{
           backgroundImage: imageUrl ? `url(${imageUrl})` : 'none',
           backgroundSize: 'cover',
@@ -245,23 +305,22 @@ export function HackathonBanner({
             <h1 className='text-left text-3xl leading-tight font-bold text-white drop-shadow-lg md:text-4xl lg:text-5xl'>
               {title}
             </h1>
-            {subtitle && typeof subtitle === 'string' ? (
-              <div
-                className='max-w-2xl text-left text-base text-gray-200 drop-shadow-md md:text-lg'
-                dangerouslySetInnerHTML={sanitizeHtml(subtitle)}
-              />
+            {tagline && typeof tagline === 'string' ? (
+              <span className='max-w-2xl text-left text-base text-gray-200 drop-shadow-md md:text-lg'>
+                {tagline}
+              </span>
             ) : (
               <div className='max-w-2xl text-left text-base text-gray-200 drop-shadow-md md:text-lg'>
-                {subtitle}
+                {tagline}
               </div>
             )}
 
-            {subtitle && (
+            {tagline && (
               <div className='h-1 w-20 rounded-full bg-[#a7f950] md:w-24' />
             )}
           </div>
 
-          {/* Bottom section: Deadline/Start/Ended and categories */}
+          {/* Bottom section: Deadline/Start/Ended, categories, and action buttons */}
           <div className='flex flex-col gap-2 md:gap-3'>
             {renderDateSection()}
             {categories && categories.length > 0 && (
@@ -269,15 +328,54 @@ export function HackathonBanner({
                 <span className='text-sm font-semibold text-[#a7f950]'>
                   Categories:
                 </span>
-                {categories.map(category => (
-                  <Badge
-                    key={category}
-                    variant='outline'
-                    className='border-gray-400 text-xs text-gray-100'
+                <CategoriesDisplay categoriesList={categories} />
+              </div>
+            )}
+
+            {/* Action Buttons */}
+            {!isEnded && (
+              <div className='mt-2 flex flex-wrap items-center gap-3'>
+                {!isRegistered && onJoinClick && (
+                  <Button
+                    onClick={onJoinClick}
+                    className='bg-[#a7f950] font-semibold text-black hover:bg-[#8fd93f]'
                   >
-                    {category}
-                  </Badge>
-                ))}
+                    Join Hackathon
+                    <ArrowRight className='ml-2 h-4 w-4' />
+                  </Button>
+                )}
+
+                {isRegistered && !hasSubmitted && onSubmitClick && (
+                  <Button
+                    onClick={onSubmitClick}
+                    className='bg-[#a7f950] font-semibold text-black hover:bg-[#8fd93f]'
+                  >
+                    <FileText className='mr-2 h-4 w-4' />
+                    Submit Project
+                    <ArrowRight className='ml-2 h-4 w-4' />
+                  </Button>
+                )}
+
+                {isRegistered && hasSubmitted && onViewSubmissionClick && (
+                  <Button
+                    onClick={onViewSubmissionClick}
+                    className='bg-[#a7f950] font-semibold text-black hover:bg-[#8fd93f]'
+                  >
+                    <FileText className='mr-2 h-4 w-4' />
+                    View Submission
+                  </Button>
+                )}
+
+                {isRegistered && isTeamFormationEnabled && onFindTeamClick && (
+                  <Button
+                    onClick={onFindTeamClick}
+                    variant='outline'
+                    className='border-blue-500/50 font-semibold text-blue-400 hover:bg-blue-500/20'
+                  >
+                    <Users className='mr-2 h-4 w-4' />
+                    Find Team
+                  </Button>
+                )}
               </div>
             )}
           </div>

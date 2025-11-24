@@ -1,3 +1,23 @@
+import {
+  HackathonPhase,
+  PrizeTier,
+  SponsorPartner,
+} from '@/lib/api/hackathons';
+
+export interface JudgingCriteria {
+  title: string;
+  weight?: number;
+  description?: string;
+}
+
+export interface Venue {
+  type: 'virtual' | 'physical';
+  country?: string;
+  state?: string;
+  city?: string;
+  venueName?: string;
+  venueAddress?: string;
+}
 export interface Participant {
   id: string | number;
   name: string;
@@ -61,6 +81,7 @@ export interface Discussion {
 }
 
 export interface SubmissionCardProps {
+  _id?: string;
   title: string;
   description: string;
   submitterName: string;
@@ -81,10 +102,62 @@ export interface SubmissionCardProps {
   hasUserUpvoted?: boolean;
 }
 
+export type ParticipantType = 'team' | 'individual' | 'team_or_individual';
+
+export interface HackathonSubmissionRequirements {
+  requireGithub?: boolean;
+  requireDemoVideo?: boolean;
+  requireOtherLinks?: boolean;
+}
+
+export interface HackathonTabVisibility {
+  detailsTab?: boolean;
+  participantsTab?: boolean;
+  resourcesTab?: boolean;
+  submissionTab?: boolean;
+  announcementsTab?: boolean;
+  discussionTab?: boolean;
+  winnersTab?: boolean;
+  sponsorsTab?: boolean;
+  joinATeamTab?: boolean;
+  rulesTab?: boolean;
+}
+
+export interface HackathonParticipationSettings {
+  participantType?: ParticipantType;
+  teamMin?: number;
+  teamMax?: number;
+  about?: string;
+  submissionRequirements?: HackathonSubmissionRequirements;
+  tabVisibility?: HackathonTabVisibility;
+}
+
+// export interface Hackathon {
+//   id: string;
+//   title: string;
+//   tagline: string;
+//   description: string;
+//   slug?: string;
+//   imageUrl: string;
+//   status: 'upcoming' | 'ongoing' | 'ended';
+//   participants: number;
+//   totalPrizePool: string;
+//   deadline: string;
+//   categories: string[];
+//   startDate: string;
+//   endDate: string;
+//   organizer: string;
+//   featured?: boolean;
+//   resources?: string[];
+//   participantType?: ParticipantType;
+//   tabVisibility?: Pick<HackathonTabVisibility, 'joinATeamTab'>;
+//   participation?: HackathonParticipationSettings;
+// }
+
 export interface Hackathon {
   id: string;
   title: string;
-  subtitle: string;
+  tagline: string;
   description: string;
   slug?: string;
   imageUrl: string;
@@ -98,4 +171,22 @@ export interface Hackathon {
   organizer: string;
   featured?: boolean;
   resources?: string[];
+  participantType?: ParticipantType;
+  tabVisibility?: Pick<HackathonTabVisibility, 'joinATeamTab'>;
+  participation?: HackathonParticipationSettings;
+  orgId?: string;
+  prizeTiers?: PrizeTier[];
+  teamMin?: number;
+  teamMax?: number;
+  venue?: Venue;
+  sponsors?: SponsorPartner[];
+  socialLinks?: string[];
+  contactEmail?: string;
+  telegram?: string;
+  discord?: string;
+  phases?: HackathonPhase[];
+  timezone?: string;
+  judgingDate?: string;
+  winnerAnnouncementDate?: string;
+  criteria?: JudgingCriteria[];
 }

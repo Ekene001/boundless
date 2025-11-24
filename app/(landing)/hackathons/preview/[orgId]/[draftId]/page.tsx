@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import {
   previewDraft,
+  PrizeTier,
   transformPublicHackathonToHackathon,
 } from '@/lib/api/hackathons';
 import { HackathonBanner } from '@/components/hackathons/hackathonBanner';
@@ -28,29 +29,28 @@ const mockTimelineEvents = [
   { event: 'Winners Announced', date: new Date().toISOString() },
 ];
 
-const mockPrizes = [
+const mockPrizes: PrizeTier[] = [
   {
-    title: 'First Place',
-    rank: '1st',
-    prize: '$5,000',
-    icon: '🥇',
-    details: ['Cash prize', 'Certificate', 'Featured on homepage'],
+    position: '1st',
+    amount: 5000,
+    currency: 'USD',
+    description: 'Cash prize, Certificate, Featured on homepage',
   },
   {
-    title: 'Second Place',
-    rank: '2nd',
-    prize: '$3,000',
-    icon: '🥈',
-    details: ['Cash prize', 'Certificate'],
+    position: '2nd',
+    amount: 3000,
+    currency: 'USD',
+    description: 'Cash prize, Certificate',
   },
   {
-    title: 'Third Place',
-    rank: '3rd',
-    prize: '$2,000',
-    icon: '🥉',
-    details: ['Cash prize', 'Certificate'],
+    position: '3rd',
+    amount: 2000,
+    currency: 'USD',
+    description: 'Cash prize, Certificate',
   },
 ];
+
+const totalPrizePool = mockPrizes.reduce((sum, prize) => sum + prize.amount, 0);
 
 interface PreviewPageProps {
   params: Promise<{
@@ -106,7 +106,7 @@ export default function DraftPreviewPage({ params }: PreviewPageProps) {
           const hackathon: Hackathon = {
             id: transformed._id,
             title: transformed.information.title,
-            subtitle: transformed.participation?.about || '',
+            tagline: transformed.participation?.about || '',
             description: transformed.information.description,
             slug: transformed.information.slug || '',
             imageUrl: transformed.information.banner,
@@ -378,7 +378,7 @@ export default function DraftPreviewPage({ params }: PreviewPageProps) {
       {/* Banner */}
       <HackathonBanner
         title={previewHackathon.title}
-        subtitle={previewHackathon.subtitle}
+        tagline={previewHackathon.tagline}
         deadline={previewHackathon.deadline}
         categories={previewHackathon.categories}
         status={previewHackathon.status}
@@ -400,6 +400,7 @@ export default function DraftPreviewPage({ params }: PreviewPageProps) {
       <div className='mx-auto max-w-7xl px-6 py-12 text-white'>
         {activeTab === 'overview' && (
           <HackathonOverview
+            totalPrizePool={totalPrizePool.toString()}
             content={mockContent}
             timelineEvents={mockTimelineEvents}
             prizes={mockPrizes}
