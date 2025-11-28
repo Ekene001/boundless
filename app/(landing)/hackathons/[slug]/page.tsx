@@ -12,7 +12,7 @@ import { HackathonOverview } from '@/components/hackathons/overview/hackathonOve
 import { HackathonParticipants } from '@/components/hackathons/participants/hackathonParticipant';
 import { HackathonResources } from '@/components/hackathons/resources/resources';
 import SubmissionTab from '@/components/hackathons/submissions/submissionTab';
-// import { HackathonDiscussions } from '@/components/hackathons/discussion/comment';
+import { HackathonDiscussions } from '@/components/hackathons/discussion/comment';
 import { TeamFormationTab } from '@/components/hackathons/team-formation/TeamFormationTab';
 import LoadingScreen from '@/components/landing-page/project/CreateProjectModal/LoadingScreen';
 import { useTimelineEvents } from '@/hooks/hackathon/use-timeline-events';
@@ -55,7 +55,7 @@ export default function HackathonPage() {
         label: 'Submissions',
         badge: submissions.filter(p => p.status === 'Approved').length,
       },
-      // { id: 'discussions', label: 'Discussions' },
+      { id: 'discussions', label: 'Discussions' },
     ];
 
     const participantType = currentHackathon?.participation?.participantType;
@@ -243,9 +243,9 @@ export default function HackathonPage() {
           />
         )}
 
-        {/* {activeTab === 'discussions' && (
+        {activeTab === 'discussions' && (
           <HackathonDiscussions hackathonId={hackathonId} />
-        )} */}
+        )}
 
         {activeTab === 'team-formation' && (
           <TeamFormationTab hackathonSlugOrId={hackathonId} />
