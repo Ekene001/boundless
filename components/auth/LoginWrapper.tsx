@@ -17,6 +17,7 @@ const formSchema = z.object({
   password: z.string().min(8, {
     message: 'Password must be at least 8 characters',
   }),
+  rememberMe: z.boolean().optional(),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -55,6 +56,7 @@ const LoginWrapper = ({ setLoadingState }: LoginWrapperProps) => {
     defaultValues: {
       email: '',
       password: '',
+      rememberMe: false,
     },
   });
 
@@ -173,7 +175,7 @@ const LoginWrapper = ({ setLoadingState }: LoginWrapperProps) => {
           {
             email: values.email,
             password: values.password,
-            rememberMe: true,
+            rememberMe: values.rememberMe,
             callbackURL: process.env.NEXT_PUBLIC_APP_URL || '/',
           },
           {

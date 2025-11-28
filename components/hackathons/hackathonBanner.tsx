@@ -165,24 +165,12 @@ export function HackathonBanner({
     // If no policy is specified, default to 'before_submission_deadline'
     const policy = registrationDeadlinePolicy || 'before_submission_deadline';
 
-    console.log('🔍 Registration Check:', {
-      policy,
-      now: now.toISOString(),
-      startDate,
-      deadline,
-      registrationDeadline,
-    });
-
     switch (policy) {
       case 'before_start':
         // Can register only before hackathon starts
         if (startDate) {
           const startDateObj = new Date(startDate);
           const canReg = now < startDateObj;
-          console.log('before_start check:', {
-            canReg,
-            startDateObj: startDateObj.toISOString(),
-          });
           return canReg;
         }
         return false;
@@ -192,10 +180,6 @@ export function HackathonBanner({
         if (deadline) {
           const deadlineObj = new Date(deadline);
           const canReg = now < deadlineObj;
-          console.log('before_submission_deadline check:', {
-            canReg,
-            deadlineObj: deadlineObj.toISOString(),
-          });
           return canReg;
         }
         return false;
@@ -205,10 +189,6 @@ export function HackathonBanner({
         if (registrationDeadline) {
           const registrationDeadlineObj = new Date(registrationDeadline);
           const canReg = now < registrationDeadlineObj;
-          console.log('custom check:', {
-            canReg,
-            registrationDeadlineObj: registrationDeadlineObj.toISOString(),
-          });
           return canReg;
         }
         return false;
@@ -257,30 +237,6 @@ export function HackathonBanner({
     canRegister,
     startDate,
     registrationDeadline,
-  ]);
-
-  // Debug useEffect to track registration logic
-  useEffect(() => {
-    console.log('🔍 Debug Registration Logic:', {
-      hackathonStatus: hackathonStatus.current,
-      registrationDeadlinePolicy:
-        registrationDeadlinePolicy || 'before_submission_deadline (default)',
-      startDate,
-      deadline,
-      registrationDeadline,
-      canRegister,
-      isBeforeStart: startDate && new Date() < new Date(startDate),
-      buttonText: getRegisterButtonText,
-      isRegistered,
-    });
-  }, [
-    registrationDeadlinePolicy,
-    startDate,
-    deadline,
-    registrationDeadline,
-    canRegister,
-    getRegisterButtonText,
-    isRegistered,
   ]);
 
   const handleRedirectToAuthScreen = () => {

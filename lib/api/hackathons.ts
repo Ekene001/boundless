@@ -1,4 +1,4 @@
-import api, { type RequestConfig } from './api';
+import api from './api';
 import { ApiResponse, ErrorResponse, PaginatedResponse } from './types';
 import { Discussion } from '@/types/hackathon';
 
@@ -754,6 +754,7 @@ export interface PublicHackathon {
   startDate: string;
   endDate: string;
   organizer: string;
+  organizerLogo?: string;
   featured: boolean;
   resources: string[];
   venue?: {
@@ -1645,9 +1646,7 @@ export const getPublicHackathonsList = async (
   const queryString = params.toString();
   const url = `/hackathons${queryString ? `?${queryString}` : ''}`;
 
-  // Use skipAuthRefresh to ensure no auth token is sent for public endpoint
-  const config: RequestConfig = { headers: { 'skip-auth-refresh': 'true' } };
-  const res = await api.get<PublicHackathonsListResponse>(url, config);
+  const res = await api.get<PublicHackathonsListResponse>(url);
 
   return res.data;
 };
@@ -1659,7 +1658,11 @@ export const getPublicHackathonsList = async (
 export const transformPublicHackathonToHackathon = (
   publicHackathon: PublicHackathon,
   organizationName?: string
-): Hackathon & { _organizationName?: string; featured?: boolean } => {
+): Hackathon & {
+  _organizationName?: string;
+  featured?: boolean;
+  organizerLogo?: string;
+} => {
   // Parse totalPrizePool string to number (format: "50,000.00")
   const prizePoolAmount =
     parseFloat(publicHackathon.totalPrizePool.replace(/,/g, '')) || 0;
@@ -1781,10 +1784,12 @@ export const transformPublicHackathonToHackathon = (
     _organizationName: organizationName || publicHackathon.organizer,
     featured: publicHackathon.featured,
     participants: publicHackathon.participants, // Add participants count for card display
+    organizerLogo: publicHackathon.organizerLogo,
   } as Hackathon & {
     _organizationName?: string;
     featured?: boolean;
     participants?: number;
+    organizerLogo?: string;
   };
 };
 

@@ -57,10 +57,6 @@ export default function HackathonPage() {
       },
       // { id: 'discussions', label: 'Discussions' },
     ];
-    console.log(
-      currentHackathon?.registrationDeadlinePolicy,
-      currentHackathon?.registrationDeadline
-    );
 
     const participantType = currentHackathon?.participation?.participantType;
     const isTeamHackathon =
@@ -229,6 +225,7 @@ export default function HackathonPage() {
             prizes={currentHackathon.prizeTiers}
             totalPrizePool={currentHackathon.totalPrizePool}
             hackathonSlugOrId={hackathonId}
+            venue={currentHackathon.venue}
           />
         )}
 
