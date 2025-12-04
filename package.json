@@ -101,7 +101,6 @@
     "dompurify": "^3.3.0",
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
-    "eslint-config-next": "^16.0.7",
     "framer-motion": "^12.23.12",
     "gsap": "^3.13.0",
     "input-otp": "^1.4.2",
