@@ -128,6 +128,8 @@ export interface HackathonRewards {
 
 // Judging Tab Types
 export interface JudgingCriterion {
+  id?: string;
+  name?: string;
   title: string;
   weight: number; // 0-100
   description?: string;
@@ -1182,7 +1184,7 @@ export const publishDraft = async (
     `/organizations/${organizationId}/hackathons/draft/${draftId}/publish`
   );
 
-  return res.data.data as PublishHackathonResponse;
+  return res.data as unknown as PublishHackathonResponse;
 };
 
 /**
@@ -1411,10 +1413,11 @@ export const getJudgingSubmissions = async (
   const params = new URLSearchParams({
     page: page.toString(),
     limit: limit.toString(),
+    status: 'SHORTLISTED',
   });
 
   const res = await api.get(
-    `/organizations/${organizationId}/hackathons/${hackathonId}/judging/submissions?${params.toString()}`
+    `/hackathons/${hackathonId}/submissions?${params.toString()}`
   );
   return res.data;
 };
@@ -1721,6 +1724,9 @@ export const getMySubmission = async (
 
 /**
  * Get submission details by ID
+ * Returns full submission with votes and comments
+ */
+/**
  * Returns full submission with votes and comments
  */
 export const getSubmissionDetails = async (
