@@ -153,14 +153,18 @@ export default function GeneralSettingsTab({
     }
   };
 
+  const inputClassName =
+    'h-12 w-full rounded-[12px] border border-zinc-700 bg-zinc-900/80 p-4 text-white placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-0 focus-visible:border-primary/50';
+
   return (
-    <div className='bg-background-card rounded-xl border border-gray-900 p-6'>
+    <div className='rounded-xl border border-zinc-800 bg-zinc-950/80 p-6 shadow-sm'>
       <div className='mb-6'>
         <h2 className='text-xl font-semibold text-white'>
           General Information
         </h2>
-        <p className='mt-1 text-sm text-gray-400'>
-          Update your hackathon's basic information, banner, and venue details.
+        <p className='mt-1 text-sm text-zinc-400'>
+          Update your hackathon&apos;s basic information, banner, and venue
+          details.
         </p>
       </div>
 
@@ -171,18 +175,18 @@ export default function GeneralSettingsTab({
             name='name'
             render={({ field }) => (
               <FormItem className='gap-3'>
-                <FormLabel className='text-sm'>
-                  Title <span className='text-error-400'>*</span>
+                <FormLabel className='text-sm font-medium text-zinc-200'>
+                  Title <span className='text-red-400'>*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
                     {...field}
                     type='text'
                     placeholder='Enter a title for your hackathon'
-                    className='bg-background-card h-12 w-full rounded-[12px] border border-gray-900 p-4 placeholder:text-gray-600 focus-visible:ring-0 focus-visible:ring-offset-0'
+                    className={inputClassName}
                   />
                 </FormControl>
-                <FormMessage className='text-error-400 text-xs' />
+                <FormMessage className='text-xs text-red-400' />
               </FormItem>
             )}
           />
@@ -203,7 +207,9 @@ export default function GeneralSettingsTab({
             name='slug'
             render={({ field }) => (
               <FormItem className='gap-3'>
-                <FormLabel className='text-sm'>URL Slug</FormLabel>
+                <FormLabel className='text-sm font-medium text-zinc-200'>
+                  URL Slug
+                </FormLabel>
                 <FormControl>
                   <Input
                     {...field}
@@ -211,13 +217,13 @@ export default function GeneralSettingsTab({
                     placeholder='e.g. my-awesome-hackathon'
                     readOnly={isPublished}
                     disabled={isPublished}
-                    className='bg-background-card h-12 w-full rounded-[12px] border border-gray-900 p-4 placeholder:text-gray-600 focus-visible:ring-0 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50'
+                    className={`${inputClassName} disabled:cursor-not-allowed disabled:opacity-60`}
                   />
                 </FormControl>
-                <FormDescription className='text-xs text-gray-500'>
+                <FormDescription className='text-xs text-zinc-500'>
                   Lowercase letters, numbers, and hyphens only.
                 </FormDescription>
-                <FormMessage className='text-error-400 text-xs' />
+                <FormMessage className='text-xs text-red-400' />
               </FormItem>
             )}
           />
@@ -227,18 +233,18 @@ export default function GeneralSettingsTab({
             name='tagline'
             render={({ field }) => (
               <FormItem className='gap-3'>
-                <FormLabel className='text-sm'>
-                  Tagline <span className='text-error-400'>*</span>
+                <FormLabel className='text-sm font-medium text-zinc-200'>
+                  Tagline <span className='text-red-400'>*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
                     {...field}
                     type='text'
                     placeholder='Enter a short tagline for your hackathon'
-                    className='bg-background-card h-12 w-full rounded-[12px] border border-gray-900 p-4 placeholder:text-gray-600 focus-visible:ring-0 focus-visible:ring-offset-0'
+                    className={inputClassName}
                   />
                 </FormControl>
-                <FormMessage className='text-error-400 text-xs' />
+                <FormMessage className='text-xs text-red-400' />
               </FormItem>
             )}
           />
@@ -254,16 +260,18 @@ export default function GeneralSettingsTab({
             name='description'
             render={({ field }) => (
               <FormItem className='gap-3'>
-                <FormLabel className='text-sm'>
-                  Details <span className='text-error-400'>*</span>
+                <FormLabel className='text-sm font-medium text-zinc-200'>
+                  Details <span className='text-red-400'>*</span>
                 </FormLabel>
                 <FormControl>
-                  <DynamicMinimalTiptap
-                    content={field.value}
-                    onChange={field.onChange}
-                  />
+                  <div className='[&_.tiptap]:prose-invert [&_.tiptap]:prose-p:text-zinc-200 [&_.tiptap]:prose-headings:text-white overflow-hidden rounded-[12px] border border-zinc-700 bg-zinc-900/80 [&_.tiptap]:min-h-[180px] [&_.tiptap]:p-4 [&_.tiptap]:text-zinc-100'>
+                    <DynamicMinimalTiptap
+                      content={field.value}
+                      onChange={field.onChange}
+                    />
+                  </div>
                 </FormControl>
-                <FormMessage className='text-error-400 text-xs' />
+                <FormMessage className='text-xs text-red-400' />
               </FormItem>
             )}
           />

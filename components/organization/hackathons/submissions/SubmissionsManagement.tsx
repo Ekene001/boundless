@@ -167,20 +167,26 @@ export function SubmissionsManagement({
       {/* Filters and Controls */}
       <div className='flex flex-col gap-4 rounded-xl border border-gray-800/50 bg-gray-900/20 p-4 backdrop-blur-sm md:flex-row md:items-center md:justify-between'>
         {/* Bulk Actions / Search */}
-        <div className='flex-1 md:max-w-md'>
+        <div
+          className={
+            selectedIds.length > 0
+              ? 'min-w-0 flex-1'
+              : 'min-w-0 flex-1 md:max-w-md'
+          }
+        >
           {selectedIds.length > 0 ? (
-            <div className='border-primary/20 bg-primary/10 flex items-center gap-2 rounded-lg border p-2'>
-              <div className='text-primary flex items-center gap-2 pl-2 text-sm font-medium whitespace-nowrap'>
+            <div className='border-primary/20 bg-primary/10 flex flex-col gap-3 rounded-lg border p-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3'>
+              <div className='text-primary flex shrink-0 items-center gap-2 text-sm font-medium'>
                 <CheckSquare className='h-4 w-4' />
                 <span>{selectedIds.length} selected</span>
               </div>
-              <div className='bg-primary/20 mx-2 h-4 w-px' />
-              <div className='flex gap-2 overflow-x-auto pb-1 md:pb-0'>
+              <div className='bg-primary/20 hidden h-4 w-px sm:block' />
+              <div className='flex flex-wrap items-center gap-2'>
                 <Button
                   size='sm'
                   onClick={() => handleBulkAction('SHORTLISTED')}
                   disabled={isBulkLoading}
-                  className='bg-green-600 whitespace-nowrap text-white hover:bg-green-700'
+                  className='shrink-0 bg-green-600 text-white hover:bg-green-700'
                 >
                   <CheckCircle className='mr-1.5 h-3.5 w-3.5' />
                   Approve
@@ -190,7 +196,7 @@ export function SubmissionsManagement({
                   variant='outline'
                   onClick={() => handleBulkAction('SUBMITTED')}
                   disabled={isBulkLoading}
-                  className='border-yellow-600/50 whitespace-nowrap text-yellow-500 hover:bg-yellow-600/10'
+                  className='shrink-0 border-yellow-600/50 text-yellow-500 hover:bg-yellow-600/10'
                 >
                   <RotateCcw className='mr-1.5 h-3.5 w-3.5' />
                   Reset
@@ -200,7 +206,7 @@ export function SubmissionsManagement({
                   variant='outline'
                   onClick={() => setShowBulkDisqualifyDialog(true)}
                   disabled={isBulkLoading}
-                  className='border-red-600/50 whitespace-nowrap text-red-500 hover:bg-red-600/10'
+                  className='shrink-0 border-red-600/50 text-red-500 hover:bg-red-600/10'
                 >
                   <Ban className='mr-1.5 h-3.5 w-3.5' />
                   Disqualify

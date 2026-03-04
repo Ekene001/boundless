@@ -543,29 +543,32 @@ export const getHackathonJudges = async (
 
 /**
  * Get winner ranking (finalized results)
+ * API response shape: res.data.data (winners array or aggregated results)
  */
 export const getJudgingWinners = async (
   organizationId: string,
   hackathonId: string
 ): Promise<GetJudgingWinnersResponse> => {
-  const res = await api.get<
-    JudgingResult[] | ApiResponse<JudgingResult[]> | AggregatedJudgingResults
-  >(
+  const res = await api.get<{
+    data: JudgingResult[] | AggregatedJudgingResults;
+  }>(
     `/organizations/${organizationId}/hackathons/${hackathonId}/judging/winners`
   );
 
-  if (Array.isArray(res.data)) {
+  const payload = res.data?.data;
+
+  if (Array.isArray(payload)) {
     return {
       success: true,
-      data: res.data,
+      data: payload,
       message: 'Winners retrieved successfully',
     } as GetJudgingWinnersResponse;
   }
 
-  if (res.data && 'results' in res.data) {
+  if (payload && typeof payload === 'object' && 'results' in payload) {
     return {
       success: true,
-      data: (res.data as AggregatedJudgingResults).results || [],
+      data: (payload as AggregatedJudgingResults).results || [],
       message: 'Winners retrieved successfully',
     } as GetJudgingWinnersResponse;
   }

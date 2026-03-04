@@ -72,6 +72,58 @@ const getTimeRemaining = (endDate: string): string => {
   return `${Math.floor(days / 365)}y`;
 };
 
+type HackathonStatus =
+  | 'DRAFT'
+  | 'UPCOMING'
+  | 'ACTIVE'
+  | 'JUDGING'
+  | 'COMPLETED'
+  | 'ARCHIVED'
+  | 'CANCELLED';
+
+const getStatusDisplay = (
+  status: HackathonStatus | undefined
+): { label: string; className: string } => {
+  switch (status) {
+    case 'UPCOMING':
+      return {
+        label: 'Upcoming',
+        className: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+      };
+    case 'ACTIVE':
+      return {
+        label: 'Live',
+        className: 'bg-green-500/10 text-green-400 border-green-500/20',
+      };
+    case 'JUDGING':
+      return {
+        label: 'Judging',
+        className: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+      };
+    case 'COMPLETED':
+      return {
+        label: 'Ended',
+        className: 'bg-zinc-500/10 text-zinc-400 border-zinc-500/20',
+      };
+    case 'ARCHIVED':
+      return {
+        label: 'Archived',
+        className: 'bg-zinc-600/10 text-zinc-500 border-zinc-600/20',
+      };
+    case 'CANCELLED':
+      return {
+        label: 'Cancelled',
+        className: 'bg-red-500/10 text-red-400 border-red-500/20',
+      };
+    case 'DRAFT':
+    default:
+      return {
+        label: status === 'DRAFT' ? 'Draft' : (status ?? 'Draft'),
+        className: 'bg-zinc-500/10 text-zinc-400 border-zinc-500/20',
+      };
+  }
+};
+
 export default function HackathonsPage() {
   const params = useParams();
   const organizationId = params.id as string;
@@ -406,16 +458,19 @@ export default function HackathonsPage() {
                           )}
                           <div className='flex flex-1 flex-col gap-2 p-5'>
                             <div className='mb-1 flex items-center gap-2'>
-                              <Badge
-                                variant='outline'
-                                className={`rounded-full border-none px-3 py-1 text-xs font-semibold ${['UPCOMING', 'ACTIVE', 'JUDGING', 'COMPLETED'].includes(hackathon.status) ? 'bg-green-500/10 text-green-500' : 'bg-secondary-500/10 text-secondary-500'}`}
-                              >
-                                {['UPCOMING', 'ACTIVE', 'JUDGING'].includes(
-                                  hackathon.status
-                                )
-                                  ? 'Live'
-                                  : hackathon.status}
-                              </Badge>
+                              {(() => {
+                                const { label, className } = getStatusDisplay(
+                                  hackathon.status as HackathonStatus
+                                );
+                                return (
+                                  <Badge
+                                    variant='outline'
+                                    className={`rounded-full border px-3 py-1 text-xs font-semibold ${className}`}
+                                  >
+                                    {label}
+                                  </Badge>
+                                );
+                              })()}
                               {endDate && (
                                 <span className='flex items-center gap-1.5 text-xs text-zinc-500'>
                                   <Calendar className='h-3 w-3' />

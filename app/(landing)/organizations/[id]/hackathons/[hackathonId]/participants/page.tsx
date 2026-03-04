@@ -137,9 +137,13 @@ const ParticipantsPage: React.FC = () => {
             organizationId,
             actualHackathonId
           );
+          const stats = response.data as {
+            totalSubmissions?: number;
+            activeParticipants?: number;
+          };
           setStatistics({
-            participantsCount: response.data.participantsCount,
-            submissionsCount: response.data.submissionsCount,
+            participantsCount: stats.activeParticipants ?? 0,
+            submissionsCount: stats.totalSubmissions ?? 0,
           });
         } catch (err) {
           console.error('Failed to load statistics', err);

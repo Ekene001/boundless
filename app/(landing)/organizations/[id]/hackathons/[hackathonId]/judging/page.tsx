@@ -24,7 +24,7 @@ import { getOrganizationMembers } from '@/lib/api/organization';
 import { getCrowdfundingProject } from '@/features/projects/api';
 import { authClient } from '@/lib/auth-client';
 import { useOrganization } from '@/lib/providers/OrganizationProvider';
-import { Loader2, Trophy } from 'lucide-react';
+import { Loader2, Trophy, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { AuthGuard } from '@/components/auth/AuthGuard';
@@ -63,6 +63,7 @@ export default function JudgingPage() {
   const canManageJudges =
     currentUserRole === 'owner' || currentUserRole === 'admin';
   const canPublishResults = canManageJudges && isCurrentUserJudge;
+  const resultsPublished = winners.length > 0;
 
   const fetchJudges = useCallback(async () => {
     // Priority: activeOrgId from context, then params.id
@@ -180,6 +181,21 @@ export default function JudgingPage() {
     }
   }, [organizationId, hackathonId]);
 
+  const fetchWinners = useCallback(async () => {
+    if (!organizationId || !hackathonId) return;
+    setIsFetchingWinners(true);
+    try {
+      const res = await getJudgingWinners(organizationId, hackathonId);
+      if (res.success && res.data) {
+        setWinners(Array.isArray(res.data) ? res.data : []);
+      }
+    } catch (error) {
+      console.error('Error fetching winners:', error);
+    } finally {
+      setIsFetchingWinners(false);
+    }
+  }, [organizationId, hackathonId]);
+
   const fetchData = useCallback(async () => {
     if (!organizationId || !hackathonId) return;
 
@@ -191,9 +207,10 @@ export default function JudgingPage() {
         getJudgingCriteria(hackathonId),
       ]);
 
-      // Trigger judges and results fetch in parallel but handle separately
+      // Trigger judges, results, and winners fetch in parallel (winners => results published state)
       fetchJudges();
       fetchResults();
+      fetchWinners();
 
       let enrichedSubmissions: JudgingSubmission[] = [];
 
@@ -289,7 +306,7 @@ export default function JudgingPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [organizationId, hackathonId, fetchJudges, fetchResults]);
+  }, [organizationId, hackathonId, fetchJudges, fetchResults, fetchWinners]);
 
   useEffect(() => {
     fetchData();
@@ -343,21 +360,6 @@ export default function JudgingPage() {
       );
     }
   };
-
-  const fetchWinners = useCallback(async () => {
-    if (!organizationId || !hackathonId) return;
-    setIsFetchingWinners(true);
-    try {
-      const res = await getJudgingWinners(organizationId, hackathonId);
-      if (res.success && res.data) {
-        setWinners(Array.isArray(res.data) ? res.data : []);
-      }
-    } catch (error) {
-      console.error('Error fetching winners:', error);
-    } finally {
-      setIsFetchingWinners(false);
-    }
-  }, [organizationId, hackathonId]);
 
   const handlePublishResults = async () => {
     setIsPublishing(true);
@@ -650,25 +652,42 @@ export default function JudgingPage() {
 
             <TabsContent value='results' className='mt-6'>
               <div className='flex flex-col gap-6'>
-                {canPublishResults && judgingResults.length > 0 && (
-                  <div className='bg-primary/5 border-primary/10 flex items-center justify-between rounded-lg border p-4'>
+                {resultsPublished && (
+                  <div className='flex items-center gap-4 rounded-lg border border-green-500/20 bg-green-500/10 p-4'>
+                    <CheckCircle2 className='h-10 w-10 shrink-0 text-green-500' />
                     <div>
-                      <h3 className='text-primary text-sm font-semibold'>
-                        Finalize Competition
+                      <h3 className='text-sm font-semibold text-green-400'>
+                        Results published
                       </h3>
                       <p className='text-xs text-gray-400'>
-                        Publish the current rankings to name the winners.
+                        Winner rankings are live. This hackathon&apos;s results
+                        have been finalized.
                       </p>
                     </div>
-                    <Button
-                      onClick={handlePublishResults}
-                      disabled={isPublishing}
-                      className='bg-primary text-primary-foreground hover:bg-primary/90 px-8 font-bold'
-                    >
-                      {isPublishing ? 'Publishing...' : 'Publish Results'}
-                    </Button>
                   </div>
                 )}
+
+                {!resultsPublished &&
+                  canPublishResults &&
+                  judgingResults.length > 0 && (
+                    <div className='bg-primary/5 border-primary/10 flex items-center justify-between rounded-lg border p-4'>
+                      <div>
+                        <h3 className='text-primary text-sm font-semibold'>
+                          Finalize Competition
+                        </h3>
+                        <p className='text-xs text-gray-400'>
+                          Publish the current rankings to name the winners.
+                        </p>
+                      </div>
+                      <Button
+                        onClick={handlePublishResults}
+                        disabled={isPublishing}
+                        className='bg-primary text-primary-foreground hover:bg-primary/90 px-8 font-bold'
+                      >
+                        {isPublishing ? 'Publishing...' : 'Publish Results'}
+                      </Button>
+                    </div>
+                  )}
 
                 {winners.length > 0 && (
                   <div className='space-y-4'>

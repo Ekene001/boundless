@@ -29,7 +29,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Sparkles } from 'lucide-react';
 import { deleteHackathon } from '@/lib/api/hackathons';
 import { toast } from 'sonner';
 import { api } from '@/lib/api/api';
@@ -160,6 +160,19 @@ export default function AdvancedSettingsTab({
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
+            <div className='bg-primary/5 border-primary/20 flex gap-3 rounded-lg border p-4'>
+              <Sparkles className='text-primary mt-0.5 h-5 w-5 shrink-0' />
+              <div>
+                <p className='text-primary text-sm font-medium'>Coming soon</p>
+                <p className='mt-1 text-xs text-zinc-400'>
+                  The following options are not yet supported by the backend and
+                  will be available in a future update: Public hackathon, Allow
+                  late registration, Require approval, Custom domain, Enable
+                  Discord, Enable Telegram.
+                </p>
+              </div>
+            </div>
+
             <div className='space-y-4'>
               <h3 className='text-sm font-medium text-white'>
                 Visibility & Access
@@ -169,7 +182,7 @@ export default function AdvancedSettingsTab({
                 control={form.control}
                 name='isPublic'
                 render={({ field }) => (
-                  <FormItem className='flex flex-row items-center justify-between rounded-lg border border-gray-900 p-4'>
+                  <FormItem className='flex flex-row items-center justify-between rounded-lg border border-gray-900 p-4 opacity-70'>
                     <div className='space-y-0.5'>
                       <FormLabel className='text-sm text-white'>
                         Public Hackathon
@@ -177,11 +190,13 @@ export default function AdvancedSettingsTab({
                       <FormDescription className='text-xs text-gray-400'>
                         Allow anyone to view and register for this hackathon
                       </FormDescription>
+                      <p className='text-primary mt-1 text-xs'>Coming soon</p>
                     </div>
                     <FormControl>
                       <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
+                        disabled
                       />
                     </FormControl>
                   </FormItem>
@@ -192,7 +207,7 @@ export default function AdvancedSettingsTab({
                 control={form.control}
                 name='allowLateRegistration'
                 render={({ field }) => (
-                  <FormItem className='flex flex-row items-center justify-between rounded-lg border border-gray-900 p-4'>
+                  <FormItem className='flex flex-row items-center justify-between rounded-lg border border-gray-900 p-4 opacity-70'>
                     <div className='space-y-0.5'>
                       <FormLabel className='text-sm text-white'>
                         Allow Late Registration
@@ -200,11 +215,13 @@ export default function AdvancedSettingsTab({
                       <FormDescription className='text-xs text-gray-400'>
                         Allow participants to register after the deadline
                       </FormDescription>
+                      <p className='text-primary mt-1 text-xs'>Coming soon</p>
                     </div>
                     <FormControl>
                       <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
+                        disabled
                       />
                     </FormControl>
                   </FormItem>
@@ -215,7 +232,7 @@ export default function AdvancedSettingsTab({
                 control={form.control}
                 name='requireApproval'
                 render={({ field }) => (
-                  <FormItem className='flex flex-row items-center justify-between rounded-lg border border-gray-900 p-4'>
+                  <FormItem className='flex flex-row items-center justify-between rounded-lg border border-gray-900 p-4 opacity-70'>
                     <div className='space-y-0.5'>
                       <FormLabel className='text-sm text-white'>
                         Require Approval
@@ -223,11 +240,13 @@ export default function AdvancedSettingsTab({
                       <FormDescription className='text-xs text-gray-400'>
                         Manually approve participant registrations
                       </FormDescription>
+                      <p className='text-primary mt-1 text-xs'>Coming soon</p>
                     </div>
                     <FormControl>
                       <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
+                        disabled
                       />
                     </FormControl>
                   </FormItem>
@@ -274,7 +293,7 @@ export default function AdvancedSettingsTab({
                 control={form.control}
                 name='customDomain'
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className='opacity-70'>
                     <FormLabel className='text-sm text-white'>
                       Custom Domain
                     </FormLabel>
@@ -283,12 +302,14 @@ export default function AdvancedSettingsTab({
                         {...field}
                         type='text'
                         placeholder='hackathon.example.com'
-                        className='bg-background-card h-12 w-full rounded-[12px] border border-gray-900 p-4 placeholder:text-gray-600 focus-visible:ring-0 focus-visible:ring-offset-0'
+                        disabled
+                        className='bg-background-card h-12 w-full rounded-[12px] border border-gray-900 p-4 placeholder:text-gray-600 focus-visible:ring-0 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-60'
                       />
                     </FormControl>
                     <FormDescription className='text-xs text-gray-400'>
                       Set a custom domain for your hackathon page
                     </FormDescription>
+                    <p className='text-primary text-xs'>Coming soon</p>
                     <FormMessage className='text-error-400 text-xs' />
                   </FormItem>
                 )}
@@ -304,7 +325,7 @@ export default function AdvancedSettingsTab({
                 control={form.control}
                 name='enableDiscord'
                 render={({ field }) => (
-                  <FormItem className='flex flex-row items-center justify-between rounded-lg border border-gray-900 p-4'>
+                  <FormItem className='flex flex-row items-center justify-between rounded-lg border border-gray-900 p-4 opacity-70'>
                     <div className='space-y-0.5'>
                       <FormLabel className='text-sm text-white'>
                         Enable Discord
@@ -312,11 +333,13 @@ export default function AdvancedSettingsTab({
                       <FormDescription className='text-xs text-gray-400'>
                         Add a Discord community link
                       </FormDescription>
+                      <p className='text-primary mt-1 text-xs'>Coming soon</p>
                     </div>
                     <FormControl>
                       <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
+                        disabled
                       />
                     </FormControl>
                   </FormItem>
@@ -334,7 +357,8 @@ export default function AdvancedSettingsTab({
                           {...field}
                           type='text'
                           placeholder='https://discord.gg/...'
-                          className='bg-background-card h-12 w-full rounded-[12px] border border-gray-900 p-4 placeholder:text-gray-600 focus-visible:ring-0 focus-visible:ring-offset-0'
+                          disabled
+                          className='bg-background-card h-12 w-full rounded-[12px] border border-gray-900 p-4 placeholder:text-gray-600 focus-visible:ring-0 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-60'
                         />
                       </FormControl>
                       <FormMessage className='text-error-400 text-xs' />
@@ -347,7 +371,7 @@ export default function AdvancedSettingsTab({
                 control={form.control}
                 name='enableTelegram'
                 render={({ field }) => (
-                  <FormItem className='flex flex-row items-center justify-between rounded-lg border border-gray-900 p-4'>
+                  <FormItem className='flex flex-row items-center justify-between rounded-lg border border-gray-900 p-4 opacity-70'>
                     <div className='space-y-0.5'>
                       <FormLabel className='text-sm text-white'>
                         Enable Telegram
@@ -355,11 +379,13 @@ export default function AdvancedSettingsTab({
                       <FormDescription className='text-xs text-gray-400'>
                         Add a Telegram community link
                       </FormDescription>
+                      <p className='text-primary mt-1 text-xs'>Coming soon</p>
                     </div>
                     <FormControl>
                       <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
+                        disabled
                       />
                     </FormControl>
                   </FormItem>
@@ -377,7 +403,8 @@ export default function AdvancedSettingsTab({
                           {...field}
                           type='text'
                           placeholder='https://t.me/...'
-                          className='bg-background-card h-12 w-full rounded-[12px] border border-gray-900 p-4 placeholder:text-gray-600 focus-visible:ring-0 focus-visible:ring-offset-0'
+                          disabled
+                          className='bg-background-card h-12 w-full rounded-[12px] border border-gray-900 p-4 placeholder:text-gray-600 focus-visible:ring-0 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-60'
                         />
                       </FormControl>
                       <FormMessage className='text-error-400 text-xs' />
