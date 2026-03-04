@@ -8,6 +8,7 @@ import { GetMeResponse } from '@/lib/api/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import Settings from '@/components/profile/update/Settings';
 import { IdentityVerificationSection } from '@/components/didit/IdentityVerificationSection';
+import { invalidateAuthProfileCache } from '@/hooks/use-auth';
 
 const SettingsContent = () => {
   const [userData, setUserData] = useState<GetMeResponse | null>(null);
@@ -27,6 +28,11 @@ const SettingsContent = () => {
   useEffect(() => {
     setIsLoading(true);
     fetchUserData();
+  }, [fetchUserData]);
+
+  const handleVerificationComplete = useCallback(async () => {
+    await fetchUserData();
+    invalidateAuthProfileCache();
   }, [fetchUserData]);
 
   if (isLoading) {
@@ -108,7 +114,7 @@ const SettingsContent = () => {
           <TabsContent value='identity' className='space-y-6'>
             <IdentityVerificationSection
               user={userData}
-              onVerificationComplete={fetchUserData}
+              onVerificationComplete={handleVerificationComplete}
             />
           </TabsContent>
         </Tabs>

@@ -4,6 +4,29 @@ import { authClient } from '@/lib/auth-client';
 import { getMe } from '@/lib/api/auth';
 import { GetMeResponse } from '@/lib/api/types';
 
+const authProfileInvalidationListeners = new Set<() => void>();
+
+export function invalidateAuthProfileCache() {
+  authProfileInvalidationListeners.forEach(listener => listener());
+}
+
+function useAuthProfileInvalidationSignal() {
+  const [refreshSignal, setRefreshSignal] = useState(0);
+
+  useEffect(() => {
+    const listener = () => {
+      setRefreshSignal(current => current + 1);
+    };
+
+    authProfileInvalidationListeners.add(listener);
+    return () => {
+      authProfileInvalidationListeners.delete(listener);
+    };
+  }, []);
+
+  return refreshSignal;
+}
+
 export function useAuth(requireAuth = true) {
   const {
     data: session,
@@ -14,6 +37,7 @@ export function useAuth(requireAuth = true) {
   const router = useRouter();
   const [userProfile, setUserProfile] = useState<GetMeResponse | null>(null);
   const [profileLoading, setProfileLoading] = useState(false);
+  const profileRefreshSignal = useAuthProfileInvalidationSignal();
 
   const user = useMemo(() => {
     if (session && 'user' in session && session.user) {
@@ -37,13 +61,7 @@ export function useAuth(requireAuth = true) {
   // Fetch profile
   useEffect(() => {
     const fetchProfile = async () => {
-      if (
-        session &&
-        'user' in session &&
-        session.user &&
-        !userProfile &&
-        !profileLoading
-      ) {
+      if (session && 'user' in session && session.user && !profileLoading) {
         try {
           setProfileLoading(true);
           const profile = await getMe();
@@ -57,7 +75,7 @@ export function useAuth(requireAuth = true) {
     };
 
     fetchProfile();
-  }, [session, userProfile, profileLoading]);
+  }, [session, profileRefreshSignal]);
 
   // Redirect if required and unauthenticated
   useEffect(() => {
@@ -100,6 +118,7 @@ export function useAuthStatus() {
   const { data: session, isPending: sessionPending } = authClient.useSession();
   const [userProfile, setUserProfile] = useState<GetMeResponse | null>(null);
   const [profileLoading, setProfileLoading] = useState(false);
+  const profileRefreshSignal = useAuthProfileInvalidationSignal();
 
   const user = useMemo(() => {
     if (session && 'user' in session && session.user) {
@@ -118,13 +137,7 @@ export function useAuthStatus() {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      if (
-        session &&
-        'user' in session &&
-        session.user &&
-        !userProfile &&
-        !profileLoading
-      ) {
+      if (session && 'user' in session && session.user && !profileLoading) {
         try {
           setProfileLoading(true);
           const profile = await getMe();
@@ -138,7 +151,7 @@ export function useAuthStatus() {
     };
 
     fetchProfile();
-  }, [session, userProfile]);
+  }, [session, profileRefreshSignal]);
 
   return {
     isAuthenticated: !!(session && 'user' in session && session.user),

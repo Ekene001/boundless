@@ -70,7 +70,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({
                 {(user?.name || 'U').charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            {!isVerified && (
+            {isVerified && (
               <span className='absolute -right-0.5 -bottom-0.5 flex rounded-full bg-black'>
                 <Image
                   src='/verified.png'

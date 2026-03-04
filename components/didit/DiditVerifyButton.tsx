@@ -7,7 +7,7 @@ import { createDiditSession } from '@/lib/api/didit';
 
 export interface DiditVerifyButtonProps {
   onSuccess?: (session: { sessionId?: string; status?: string }) => void;
-  onError?: (error: { code?: string; message?: string }) => void;
+  onError?: (error: Error | { code?: string; message?: string }) => void;
   onCancel?: () => void;
   className?: string;
   disabled?: boolean;
@@ -63,8 +63,10 @@ export function DiditVerifyButton({
     } catch (e) {
       const message =
         e instanceof Error ? e.message : 'Failed to start verification';
+      const error = e instanceof Error ? e : new Error(message);
       setError(message);
       setLoading(false);
+      onError?.(error);
     }
   };
 
