@@ -66,6 +66,9 @@ export interface User {
   displayUsername: string;
   metadata?: Record<string, unknown>;
   twoFactorEnabled: boolean;
+  /** Didit identity verification: Approved | Declined | In Review | null */
+  identityVerificationStatus?: 'Approved' | 'Declined' | 'In Review' | null;
+  identityVerificationAt?: string | null;
   members?: Array<{
     id: string;
     organizationId: string;
