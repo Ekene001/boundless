@@ -1,3 +1,5 @@
+import type { IdentityVerificationStatus } from '@/lib/api/types';
+
 export type UserRole = 'user' | 'admin' | 'moderator';
 
 export type LoginMethod = 'email' | 'google' | 'github' | 'discord';
@@ -167,7 +169,7 @@ export interface User {
   metadata?: any;
   twoFactorEnabled: boolean;
   /** Didit identity verification: Approved | Declined | In Review | null */
-  identityVerificationStatus?: 'Approved' | 'Declined' | 'In Review' | null;
+  identityVerificationStatus?: IdentityVerificationStatus;
   identityVerificationAt?: string | null;
   members?: Array<{
     id: string;

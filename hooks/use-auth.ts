@@ -7,7 +7,9 @@ import { GetMeResponse } from '@/lib/api/types';
 const authProfileInvalidationListeners = new Set<() => void>();
 
 export function invalidateAuthProfileCache() {
-  authProfileInvalidationListeners.forEach(listener => listener());
+  authProfileInvalidationListeners.forEach(listener => {
+    listener();
+  });
 }
 
 function useAuthProfileInvalidationSignal() {
@@ -61,7 +63,7 @@ export function useAuth(requireAuth = true) {
   // Fetch profile
   useEffect(() => {
     const fetchProfile = async () => {
-      if (session && 'user' in session && session.user && !profileLoading) {
+      if (session && 'user' in session && session.user) {
         try {
           setProfileLoading(true);
           const profile = await getMe();
@@ -137,7 +139,7 @@ export function useAuthStatus() {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      if (session && 'user' in session && session.user && !profileLoading) {
+      if (session && 'user' in session && session.user) {
         try {
           setProfileLoading(true);
           const profile = await getMe();
