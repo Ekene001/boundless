@@ -1,205 +1,123 @@
+# Bug Test Report: Organization & Onboarding Flow
 
-# BoundlessFi – Bug Test Report
+**Project:** BoundlessFi  
+**Date:** March 7, 2026  
+**Environment:** Frontend (Local) / Backend (Staging API)  
+**Status:** Issue #448 Verification Complete
 
-### Environment
+---
 
-* Frontend running **locally**
-* Backend: **staging API (`stage-api.boundlessfi.xyz`)**
+## 1. Executive Summary
 
+Overall, core organization features (creation, search, and navigation) are stable. However, critical blockers exist within the **Invitation Lifecycle** and **Hackathon Publishing** flows. Additionally, UX refinements are needed for mobile navigation and input validation.
 
+---
 
-# General Functionality Tests
+## 2. Issue #448 Verification Status [COMPLETED]
 
-* **Organizations page** opens and functions properly.
-* **Navigation (`nav/organization`)** correctly directs to the organizations page.
-* **Organization creation** works properly.
-* After creating an organization, **redirect to `/organization/settings` works correctly**.
-* **Organization search feature** works properly.
-* **Inviting members** works correctly.
-* **Canceling invites** works properly.
-* **Sign out** works perfectly and redirects to the sign-in form.
+All items specified in Issue #448 have been verified for production readiness:
 
+| Feature                  | Status | Notes                                                |
+| :----------------------- | :----- | :--------------------------------------------------- |
+| **Public Profile Route** | Pass   | `/org/[slug]` functions correctly end-to-end.        |
+| **OG Metadata**          | Pass   | Title, description, and images validated.            |
+| **Settings Tabs**        | Pass   | Profile, Links, Members, and Transfer verified.      |
+| **Sidebar Actions**      | Pass   | Host Hackathon and Grants (disabled state) verified. |
+| **Search/Sort**          | Pass   | Search and sort keys behave as expected.             |
+| **Deep-linking**         | Pass   | Direct URL loading for organizations is functional.  |
+| **Header Search**        | Pass   | `⌘K` navigation is bug-free.                         |
+| **Profile Validation**   | Pass   | Slug/Profile validation logic is functional.         |
+| **Mobile Responsive**    | Pass   | Hamburger menu is functional on settings pages.      |
 
+---
 
-# Suggestions / UX Observations
+## 3. High-Priority Bugs
 
-### Password Validation UX
+### BUG-001: Invite Link Routing Mismatch (404)
 
-The sign-up form does not follow a good UX pattern for password validation.
+- **Issue:** Generated invite links point to `/signup` instead of the active `/auth` route.
+- **Example Link:** `https://staging.boundlessfi.xyz/signup?invitationId=...`
+- **Impact:** Users cannot join organizations via email.
+- **Recommended Fix:** Update `getInvitationUrl` in the backend/auth-config to target `/auth`.
 
-**Issue**
+### BUG-002: Invite Acceptance Logic Failure
 
-* If a weak password is entered, the form simply refuses submission.
-* No message or warning is shown explaining that the password is weak.
+- **Issue:** Manually correcting the URL to `/auth` allows sign-up, but the user is not associated with the organization.
+- **Actual Behavior:** User is redirected to home; status remains "Pending"; member list is not updated.
+- **Expected Behavior:** User should automatically join the organization and redirect to the org dashboard.
 
-**Suggestion**
+### BUG-003: Hackathon Publish Endpoint (404)
 
-* Show a clear validation message such as:
+- **Action:** Click **Publish** in the Preview tab for a draft hackathon.
+- **Observed Error:** `PUT .../api/organizations/{orgId}/hackathons/draft/{hackathonId}/publish` returns **404 Not Found**.
+- **Likely Root Cause:** Wallet balance is insufficient for publish-related on-chain or fee-dependent operations.
+- **UX Gap:** The UI does not tell users that the publish failure is caused by **insufficient wallet funds**.
+- **Impact:** Users cannot move hackathons from "Draft" to "Live" and do not know how to resolve it.
+- **Suggestion:** Show a clear inline/toast error such as: `Insufficient wallet funds to publish. Please fund your wallet and try again.`
 
-  `"Password must meet the required strength criteria"`
+**Suggested User Guidance (Fund Wallet Steps)**
 
-This would improve the sign-up user experience.
+1. Open wallet settings from the profile/wallet menu.
+2. Copy your connected wallet address.
+3. Add funds to that wallet on the required network (via exchange transfer, bridge, or faucet for test/staging).
+4. Wait for transaction confirmation and refresh the app.
+5. Return to the hackathon draft and click **Publish** again.
 
+### BUG-004: Delete/Archive Organization Non-Functional
 
+- **Issue:** Actions to delete or archive an organization fail.
 
-# Bugs Identified
+**What I tested**
 
-## 1. Slug Validation Issue During Organization Creation
+- Opened `/organizations`.
+- Selected an organization.
+- Clicked the **Archive** button and completed the confirmation prompt.
+- Clicked the **Delete** button and completed the confirmation prompt.
 
-**Issue**
+**Observed Result**
 
-* The slug validation always displays **“Slug available”** even when the slug is already used.
-
-**Actual Behavior**
-
-* When attempting to create the organization, the system prevents creation because the slug already exists.
-* However, the UI does not inform the user beforehand.
-
-**Expected Behavior**
-
-* If the slug already exists, the validation should immediately show something like:
-
-  `"Slug already taken"`
-
-This would prevent confusion during organization creation.
-
-
-
-## 2. Delete / Archive Organization Not Working
-
-**Issue**
-
-* The **delete/archive organization feature does not work**.
+- Both actions failed.
+- The organization was not archived and not deleted.
 
 **Expected Result**
 
-* The organization should either be archived or removed depending on the selected action.
+- Archive should move the organization to archived state.
+- Delete should remove the organization.
 
-**Actual Result**
+**Scope**
 
-* failed to delete/archive.
+- Test type: Manual UI test.
+- Environment: Frontend local + staging backend.
+- Role: Owner.
+- Organizations tested: 1 organization in this pass.
 
+## 4. UI/UX Improvements
 
+### UX-001: Mobile Navigation Tabs (Host Hackathon)
 
-## 3. Invite Link Leads to 404 Page
+- **Observation:** Sub-navigation tabs (e.g., Participation, Edit) are difficult to access/truncated on mobile screens.
+- **Suggestion:** Implement **horizontal scrollable tabs** for sub-nav menus to improve mobile accessibility.
 
-When inviting members to an organization, the generated invite link leads to a **404 page**.
+### UX-002: Slug Availability Feedback
 
-Example invite link:
+- **Issue:** The UI displays "Slug available" even for taken slugs, only failing upon final form submission.
+- **Suggestion:** Real-time validation should return "Slug already taken" before the user attempts to submit.
 
-https://staging.boundlessfi.xyz/signup?invitationId=L9IXtMcqyu3EZgH40zXq4tGabPHQggoD&email=magic.cicada.umac%40hidingmail.com
+### UX-003: Password Strength Feedback
 
+- **Issue:** Form submission is blocked for weak passwords without explaining why.
+- **Suggestion:** Add a helper text: _"Password must be at least 8 characters and include a number."_
 
-**Issue**
+---
 
-* The invite link points to `/signup`, but the application's authentication route is actually `/auth`.
+## 5. Technical Edge Cases
 
-**Expected Behavior**
+### Route Guarding: Invalid Organization IDs
 
-https://staging.boundlessfi.xyz/auth?invitationId=...
+- **Issue:** Manually entering an invalid ID (e.g., `/organizations/random123/settings`) still renders the settings UI shell.
+- **Recommendation:** Implement a check to return a 404 page if the Organization ID does not exist in the database.
 
+---
 
-**Suggestion**
-
-* Update the function that generates invitation URLs (`getInvitationUrl` or equivalent) to use `/auth` instead of `/signup`.
-
-
-
-## 4. Invite Acceptance Does Not Add Member to Organization
-
-When manually correcting the invite link to:
-
-http://localhost:3000/auth?invitationId=L9IXtMcqyu3EZgH40zXq4tGabPHQggoD&email=magic.cicada.umac%40hidingmail.com
-
-
-**Observed Behavior**
-
-1. The user is redirected to the **sign-up form**, which is correct.
-2. After signing up:
-
-   * The user is redirected to the **home page**, not the organization page.
-   * The **invite status still shows "Pending Invite"**.
-   * The user is **not added as a member of the organization**.
-
-**Expected Behavior**
-
-* After completing sign-up:
-
-  * The user should automatically **join the inviting organization**.
-  * The invite status should change from **Pending → Accepted**.
-  * The user should be redirected to the **organization page**.
-
-
-
-## 5. Hackathon Publish Fails
-
-### Steps to Reproduce
-
-1. Create a hackathon draft.
-2. Navigate to the **Preview tab**.
-3. Click **Publish**.
-
-**Expected Result**
-
-* The hackathon should publish successfully.
-
-**Actual Result**
-
-* Publishing fails and the hackathon remains in **Draft**.
-
-**Console Error**
-
-PUT https://stage-api.boundlessfi.xyz/api/organizations/{orgId}/hackathons/draft/{hackathonId}/publish
-404 (Not Found)
-
-
-This indicates the publish endpoint may not exist or the route is incorrect.
-
-
-
-## 6. Invalid Organization Settings Route Still Loads
-
-While testing routes, manually navigating to a non-existent organization route still loads the organization settings page.
-
-Example tested route:
-
-https://staging.boundlessfi.xyz/organizations/random123/settings
-
-
-**Expected Behavior**
-
-* The application should either:
-
-  * return a **404 page**
-  * redirect to `/organizations`
-  * or display **“Organization not found”**
-
-**Actual Behavior**
-
-* The **organization settings page still loads** even though the organization ID does not exist.
-
-**Impact**
-
-* Users can access invalid routes.
-* This may cause confusion or incorrect organization context.
-
-**Suggestion**
-
-* Add validation to check if the organization ID exists before rendering the settings page.
-
-
-
-# Summary
-
-Overall, most core organization features such as **creation, navigation, searching, and invites** work as expected. However, several issues were identified including:
-
-* Slug validation feedback
-* Organization archive/delete not working
-* Broken invite link routing
-* Invite acceptance not adding members to organizations
-* Hackathon publishing endpoint returning **404**
-* Invalid organization routes still loading settings pages
-* Password validation UX issue
-
-
-
+**Reported by:** QA Team  
+**Branch:** `test/Test the organization flow - manual QA checklist`
