@@ -120,4 +120,4 @@ All items specified in Issue #448 have been verified for production readiness:
 ---
 
 **Reported by:** QA Team  
-**Branch:** `test/Test the organization flow - manual QA checklist`
+**Branch:** `Test/Test-the-organization-flow---manual-QA-checklist`
